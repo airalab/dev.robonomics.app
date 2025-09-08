@@ -3,76 +3,50 @@ name: github pages
 on:
   push:
     branches: [ master, main ]
-  workflow_dispatch:
-
-permissions:
-  contents: write
-
-concurrency:
-  group: pages-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - name: Ensure gh-pages branch exists
-        run: |
-          if ! git ls-remote --exit-code --heads origin gh-pages; then
-            echo "Creating gh-pages branch..."
-            git checkout --orphan gh-pages
-            git reset --hard
-            echo "<h1>Init gh-pages</h1>" > index.html
-            git add index.html
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git commit -m "Initialize gh-pages branch"
-            git push origin gh-pages
-            git checkout "${GITHUB_REF_NAME}"
-          fi
-
-      - name: Setup Node.js + cache
-        uses: actions/setup-node@v4
+      - name: Find Tag
+        id: tagger
+        uses: jimschubert/query-tag-action@v1
         with:
-          node-version: "20"
-          cache: "yarn"
-          cache-dependency-path: yarn.lock
+          include: 'v*'
 
-      - name: Install system deps
-        run: sudo apt-get update && sudo apt-get install -y build-essential python3
-
-      - name: Print Node and Yarn versions
+      - name: Set env
         run: |
-          node -v
-          yarn -v
+          echo "git_hash=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+          echo "git_branch=$(echo ${GITHUB_REF#refs/heads/})" >> "$GITHUB_ENV"
 
-      - name: Install dependencies
-        run: yarn install
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.17.0"
 
-      - name: Build project
-        run: yarn build
+      - name: Get yarn cache
+        id: yarn-cache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - name: Write CNAME if provided
-        run: |
-          if [ -n "${PAGES_CNAME}" ]; then
-            echo "$PAGES_CNAME" > dist/CNAME
-            echo "CNAME set to: $PAGES_CNAME"
-          else
-            echo "No PAGES_CNAME set; skipping CNAME"
-          fi
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-website-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-website-
+      - run: yarn install
+      - run: yarn build
         env:
-          PAGES_CNAME: ${{ vars.PAGES_CNAME }}
+          VUE_APP_GIT_BRANCH: ${{ env.git_branch }}
+          VUE_APP_GIT_TAG: ${{ steps.tagger.outputs.tag }}
+          VUE_APP_GIT_SHA: ${{ env.git_hash }}
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          clean: true
-
-      - name: Set commit output
-        id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          cname: dev.robonomics.app
