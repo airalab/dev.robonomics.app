@@ -10,7 +10,6 @@ import { inject, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 
-
 export default {
   name: "App",
   components: {
