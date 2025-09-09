@@ -28,7 +28,7 @@ jobs:
 
       - name: Get yarn cache
         id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
       - name: Cache dependencies
         uses: actions/cache@v3
@@ -37,6 +37,7 @@ jobs:
           key: ${{ runner.os }}-website-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-website-
+
       - run: yarn install
       - run: yarn build
         env:
@@ -47,6 +48,6 @@ jobs:
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           cname: dev.robonomics.app
