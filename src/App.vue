@@ -16,7 +16,7 @@ export default {
     MainLayout
   },
   setup() {
-    const RobonomicsProvider = inject('RobonomicsProvider');
+    const RobonomicsProvider = inject("RobonomicsProvider");
     // const IpfsProvider = inject("IpfsProvider");
     const store = useStore();
     const router = useRouter();
