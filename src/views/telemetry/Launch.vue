@@ -15,8 +15,10 @@ import { useStore } from "vuex";
 import { useData } from "./launch";
 
 // это для тестов верстки карточек, когда все остальные тестовые стенды отвалились
-import configTest from "./Lugano-config.json";
-import dataTest from "./Lugano.json";
+// import configTest from "./test/Lugano-config.json";
+// import dataTest from "./test/Lugano.json";
+import configTest from "./test/office-config.json";
+import dataTest from "./test/office-datalog.json";
 
 export default {
   props: {

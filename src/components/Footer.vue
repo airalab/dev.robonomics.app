@@ -17,7 +17,7 @@
         </div>
         <robo-text v-if="repoversion" size="small" weight="bold" align="center" class="footer-section">
             Latest release:
-            <a :href="repoversion.html_url" target="_blank">{{ repoversion.tag_name }} {{ repoversion.name }}</a>
+            <a :href="repoversion.html_url" target="_blank">{{ repoversion.name.includes(repoversion.tag_name) ? '' : repoversion.tag_name  }} {{ repoversion.name }}</a>
         </robo-text>
     </footer>
 </template>
