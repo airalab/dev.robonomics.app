@@ -1,7 +1,8 @@
 v0.9.1
-- Fix: controller editting issue
+- Fix: controller editing issue
 - Fix: controller error when empty
-- Fix: layout fix (forms sentering)
+- Fix: layout fix (forms centering)
+- Feat: new page for subscription
 
 v0.9.0
 - Revised subscription interfaces

@@ -10,6 +10,7 @@ import PathNotFound from "./views/PathNotFound.vue";
 import RwsActivate from "./views/RwsActivate.vue";
 import RwsSetup from "./views/RwsSetup.vue";
 import RwsSetupNew from "./views/RwsSetupNew.vue";
+import RwsSubscription from "./views/RwsSubscription.vue";
 // import Services from "./views/Services.vue";
 import EnergyMonitor from "./views/hardware/Energy-monitor.vue";
 import SaveSetup from "./views/saveSetup/Page.vue";
@@ -46,6 +47,14 @@ const routes = [
     component: RwsSetupNew,
     meta: {
       title: "New Subscription setup"
+    }
+  },
+    {
+    path: "/rws-subscription",
+    name: "rwsSubscription",
+    component: RwsSubscription,
+    meta: {
+      title: "New Subscription renewal setup"
     }
   },
   {
